@@ -1,0 +1,79 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "MedFEMA: iniciar banco",
+      "type": "shell",
+      "command": "docker compose up -d",
+      "options": { "cwd": "${workspaceFolder}" },
+      "problemMatcher": []
+    },
+    {
+      "label": "MedFEMA: backend",
+      "type": "shell",
+      "command": ".\\mvnw.cmd spring-boot:run",
+      "options": {
+        "cwd": "${workspaceFolder}\\backend",
+        "env": { "SPRING_PROFILES_ACTIVE": "local" }
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "group": "medfema"
+      },
+      "runOptions": { "instanceLimit": 1 }
+    },
+    {
+      "label": "MedFEMA: frontend",
+      "type": "shell",
+      "command": "npm.cmd start",
+      "options": { "cwd": "${workspaceFolder}\\frontend" },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "group": "medfema"
+      },
+      "runOptions": { "instanceLimit": 1 }
+    },
+    {
+      "label": "MedFEMA: executar tudo",
+      "type": "shell",
+      "command": "java -jar target\\medfema-api-0.0.1-SNAPSHOT.jar --spring.profiles.active=local",
+      "options": { "cwd": "${workspaceFolder}\\backend" },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "runOptions": { "instanceLimit": 1 }
+    },
+    {
+      "label": "MedFEMA: desenvolvimento",
+      "dependsOn": ["MedFEMA: backend", "MedFEMA: frontend"],
+      "dependsOrder": "parallel",
+      "problemMatcher": []
+    },
+    {
+      "label": "MedFEMA: testar tudo",
+      "dependsOn": ["MedFEMA: testar backend", "MedFEMA: build frontend"],
+      "dependsOrder": "parallel",
+      "problemMatcher": []
+    },
+    {
+      "label": "MedFEMA: testar backend",
+      "type": "shell",
+      "command": ".\\mvnw.cmd test",
+      "options": { "cwd": "${workspaceFolder}\\backend" },
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "MedFEMA: build frontend",
+      "type": "shell",
+      "command": "npm.cmd run build",
+      "options": { "cwd": "${workspaceFolder}\\frontend" },
+      "problemMatcher": []
+    }
+  ]
+}

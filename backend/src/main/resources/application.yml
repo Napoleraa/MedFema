@@ -1,0 +1,30 @@
+spring:
+  application:
+    name: medfema-api
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+  flyway:
+    enabled: true
+server:
+  port: ${PORT:8080}
+app:
+  auth:
+    user: ${APP_USER}
+    password: ${APP_PASSWORD}
+  jwt:
+    secret: ${JWT_SECRET}
+    expiration-ms: 3600000
+  cors:
+    origin: ${CORS_ORIGIN}
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html

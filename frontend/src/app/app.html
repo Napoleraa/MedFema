@@ -1,0 +1,117 @@
+@if (!logado) {
+  <main class="login-page">
+    <section class="login-card">
+      <div class="brand-mark">+</div>
+      <p class="eyebrow">CLÍNICA MÉDICA</p>
+      <h1>MedFEMA</h1>
+      <p class="subtitle">Gestão de médicos, pacientes e consultas</p>
+      <form (ngSubmit)="entrar()">
+        <label>Usuário<input name="usuario" [(ngModel)]="loginForm.usuario" required /></label>
+        <label>Senha<input name="senha" type="password" [(ngModel)]="loginForm.senha" required /></label>
+        @if (erro) { <p class="alert error">{{ erro }}</p> }
+        <button class="primary full" type="submit" [disabled]="carregando">{{ carregando ? 'Entrando...' : 'Entrar' }}</button>
+      </form>
+      @if (ambienteLocal) { <small>Acesso inicial: admin / admin123</small> }
+    </section>
+  </main>
+} @else {
+  <div class="shell">
+    <aside>
+      <div class="side-brand"><span>+</span><strong>MedFEMA</strong></div>
+      <nav>
+        <button [class.active]="aba === 'medicos'" (click)="selecionarAba('medicos')">Médicos</button>
+        <button [class.active]="aba === 'pacientes'" (click)="selecionarAba('pacientes')">Pacientes</button>
+        <button [class.active]="aba === 'consultas'" (click)="selecionarAba('consultas')">Consultas</button>
+      </nav>
+      <button class="logout" (click)="sair()">Sair</button>
+    </aside>
+
+    <main class="content">
+      <header>
+        <div><p class="eyebrow">PAINEL ADMINISTRATIVO</p><h1>{{ aba === 'medicos' ? 'Médicos' : aba === 'pacientes' ? 'Pacientes' : 'Consultas' }}</h1></div>
+        @if (aba !== 'consultas') { <button class="primary" (click)="abrirNovo()">+ Novo cadastro</button> }
+      </header>
+      @if (mensagem) { <p class="alert success">{{ mensagem }}</p> }
+      @if (erro) { <p class="alert error">{{ erro }}</p> }
+
+      @if (aba === 'medicos') {
+        @if (mostrarFormulario) {
+          <section class="panel form-panel">
+            <div class="panel-title"><h2>{{ medicoId ? 'Editar médico' : 'Cadastrar médico' }}</h2><button class="icon" (click)="mostrarFormulario = false">×</button></div>
+            <form (ngSubmit)="salvarMedico()" class="form-grid">
+              <label>Nome<input name="mNome" [(ngModel)]="medicoForm.nome" required /></label>
+              <label>Telefone<input name="mTelefone" [(ngModel)]="medicoForm.telefone" required /></label>
+              @if (!medicoId) {
+                <label>E-mail<input name="mEmail" type="email" [(ngModel)]="medicoForm.email" required /></label>
+                <label>CRM<input name="mCrm" [(ngModel)]="medicoForm.crm" required /></label>
+                <label>Especialidade<select name="mEspecialidade" [(ngModel)]="medicoForm.especialidade" required><option value="">Selecione</option>@for (e of especialidades; track e) { <option [value]="e">{{ e }}</option> }</select></label>
+              }
+              <label class="wide">Logradouro<input name="mLogradouro" [(ngModel)]="medicoForm.endereco.logradouro" required /></label>
+              <label>Número<input name="mNumero" [(ngModel)]="medicoForm.endereco.numero" /></label>
+              <label>Complemento<input name="mComplemento" [(ngModel)]="medicoForm.endereco.complemento" /></label>
+              <label>Bairro<input name="mBairro" [(ngModel)]="medicoForm.endereco.bairro" required /></label>
+              <label>Cidade<input name="mCidade" [(ngModel)]="medicoForm.endereco.cidade" required /></label>
+              <label>UF<input name="mUf" maxlength="2" [(ngModel)]="medicoForm.endereco.uf" required /></label>
+              <label>CEP<input name="mCep" maxlength="9" placeholder="00000-000" [(ngModel)]="medicoForm.endereco.cep" (ngModelChange)="buscarCep(medicoForm.endereco, false)" (blur)="buscarCep(medicoForm.endereco)" required /><small>{{ buscandoCep ? 'Buscando endereço...' : 'O endereço será preenchido automaticamente' }}</small></label>
+              <div class="actions wide"><button type="button" class="secondary" (click)="mostrarFormulario = false">Cancelar</button><button type="submit" class="primary" [disabled]="processando || buscandoCep">{{ processando ? 'Salvando...' : buscandoCep ? 'Aguarde o CEP...' : 'Salvar' }}</button></div>
+            </form>
+          </section>
+        }
+        <section class="panel">
+          <div class="panel-title"><h2>Médicos ativos</h2><span>{{ medicos.length }} registros</span></div>
+          <div class="cards">
+            @for (m of medicos; track m.id) {
+              <article class="person-card"><div class="avatar">{{ m.nome.charAt(0) }}</div><div class="person-info"><h3>{{ m.nome }}</h3><p>{{ m.especialidade }} · CRM {{ m.crm }}</p><small>{{ m.email }} · {{ m.telefone }}</small></div><div class="row-actions"><button (click)="editarMedico(m)">Editar</button><button class="danger" (click)="excluirMedico(m.id)">Desativar</button></div></article>
+            } @empty { <div class="empty">Nenhum médico cadastrado.</div> }
+          </div>
+        </section>
+      }
+
+      @if (aba === 'pacientes') {
+        @if (mostrarFormulario) {
+          <section class="panel form-panel">
+            <div class="panel-title"><h2>{{ pacienteId ? 'Editar paciente' : 'Cadastrar paciente' }}</h2><button class="icon" (click)="mostrarFormulario = false">×</button></div>
+            <form (ngSubmit)="salvarPaciente()" class="form-grid">
+              <label>Nome<input name="pNome" [(ngModel)]="pacienteForm.nome" required /></label>
+              <label>Telefone<input name="pTelefone" [(ngModel)]="pacienteForm.telefone" required /></label>
+              @if (!pacienteId) { <label>E-mail<input name="pEmail" type="email" [(ngModel)]="pacienteForm.email" required /></label><label>CPF<input name="pCpf" [(ngModel)]="pacienteForm.cpf" required /></label> }
+              <label class="wide">Logradouro<input name="pLogradouro" [(ngModel)]="pacienteForm.endereco.logradouro" required /></label>
+              <label>Número<input name="pNumero" [(ngModel)]="pacienteForm.endereco.numero" /></label>
+              <label>Complemento<input name="pComplemento" [(ngModel)]="pacienteForm.endereco.complemento" /></label>
+              <label>Bairro<input name="pBairro" [(ngModel)]="pacienteForm.endereco.bairro" required /></label>
+              <label>Cidade<input name="pCidade" [(ngModel)]="pacienteForm.endereco.cidade" required /></label>
+              <label>UF<input name="pUf" maxlength="2" [(ngModel)]="pacienteForm.endereco.uf" required /></label>
+              <label>CEP<input name="pCep" maxlength="9" placeholder="00000-000" [(ngModel)]="pacienteForm.endereco.cep" (ngModelChange)="buscarCep(pacienteForm.endereco, false)" (blur)="buscarCep(pacienteForm.endereco)" required /><small>{{ buscandoCep ? 'Buscando endereço...' : 'O endereço será preenchido automaticamente' }}</small></label>
+              <div class="actions wide"><button type="button" class="secondary" (click)="mostrarFormulario = false">Cancelar</button><button type="submit" class="primary" [disabled]="processando || buscandoCep">{{ processando ? 'Salvando...' : buscandoCep ? 'Aguarde o CEP...' : 'Salvar' }}</button></div>
+            </form>
+          </section>
+        }
+        <section class="panel">
+          <div class="panel-title"><h2>Pacientes ativos</h2><span>{{ pacientes.length }} registros</span></div>
+          <div class="cards">
+            @for (p of pacientes; track p.id) { <article class="person-card"><div class="avatar patient">{{ p.nome.charAt(0) }}</div><div class="person-info"><h3>{{ p.nome }}</h3><p>CPF {{ p.cpf }}</p><small>{{ p.email }} · {{ p.telefone }}</small></div><div class="row-actions"><button (click)="editarPaciente(p)">Editar</button><button class="danger" (click)="excluirPaciente(p.id)">Desativar</button></div></article> } @empty { <div class="empty">Nenhum paciente cadastrado.</div> }
+          </div>
+        </section>
+      }
+
+      @if (aba === 'consultas') {
+        <section class="panel form-panel">
+          <div class="panel-title"><h2>Agendar consulta</h2><span>Atendimento de segunda a sábado, 07h às 19h</span></div>
+          <form (ngSubmit)="agendar()" class="appointment-form">
+            <label>Paciente<select name="cPaciente" [(ngModel)]="consultaForm.pacienteId" required><option [ngValue]="undefined">Selecione</option>@for (p of pacientes; track p.id) { <option [ngValue]="p.id">{{ p.nome }}</option> }</select></label>
+            <label>Especialidade<select name="cEspecialidade" [(ngModel)]="consultaForm.especialidade"><option value="">Selecione</option>@for (e of especialidades; track e) { <option [value]="e">{{ e }}</option> }</select></label>
+            <label>Médico (opcional)<select name="cMedico" [(ngModel)]="consultaForm.medicoId"><option [ngValue]="undefined">Escolha automática</option>@for (m of medicos; track m.id) { <option [ngValue]="m.id">{{ m.nome }}</option> }</select></label>
+            <label>Data e hora<input name="cData" type="datetime-local" [(ngModel)]="consultaForm.dataHora" required /></label>
+            <button type="submit" class="primary" [disabled]="processando">{{ processando ? 'Agendando...' : 'Agendar' }}</button>
+          </form>
+        </section>
+        <section class="panel">
+          <div class="panel-title"><h2>Agenda</h2><span>{{ consultas.length }} consultas</span></div>
+          <div class="table-wrap"><table><thead><tr><th>Data</th><th>Paciente</th><th>Médico</th><th>Status</th><th></th></tr></thead><tbody>
+            @for (c of consultas; track c.id) { <tr><td data-label="Data">{{ c.dataHora | date:'dd/MM/yyyy HH:mm' }}</td><td data-label="Paciente">{{ c.paciente }}</td><td data-label="Médico">{{ c.medico }}</td><td data-label="Status"><span class="status" [class.cancelled]="c.cancelada">{{ c.cancelada ? 'Cancelada' : 'Agendada' }}</span></td><td class="table-action">@if (!c.cancelada) { <button class="danger link" (click)="cancelar(c)">Cancelar</button> }</td></tr> } @empty { <tr><td colspan="5" class="empty">Nenhuma consulta agendada.</td></tr> }
+          </tbody></table></div>
+        </section>
+      }
+    </main>
+  </div>
+}

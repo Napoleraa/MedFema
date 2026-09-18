@@ -1,0 +1,22 @@
+spring:
+  datasource:
+    url: jdbc:h2:file:./data/medfema;MODE=MySQL
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+  flyway:
+    enabled: true
+  web:
+    resources:
+      static-locations: file:../frontend/dist/frontend/browser/,classpath:/static/
+app:
+  auth:
+    user: admin
+    password: admin123
+  jwt:
+    secret: medfema-chave-secreta-local-com-mais-de-32-caracteres
+  cors:
+    origin: http://localhost:4200
