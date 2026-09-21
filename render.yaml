@@ -1,0 +1,47 @@
+services:
+  - type: web
+    name: medfema-api
+    runtime: docker
+    plan: free
+    region: oregon
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    healthCheckPath: /v3/api-docs
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: postgres
+      - key: DB_HOST
+        fromDatabase:
+          name: medfema-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: medfema-db
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: medfema-db
+          property: database
+      - key: DB_USER
+        fromDatabase:
+          name: medfema-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: medfema-db
+          property: password
+      - key: APP_USER
+        value: admin
+      - key: APP_PASSWORD
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: CORS_ORIGIN
+        sync: false
+
+databases:
+  - name: medfema-db
+    plan: free
+    region: oregon
+    databaseName: medfema
+    user: medfema

@@ -80,7 +80,7 @@ O repositório contém dois projetos:
 - `frontend`: aplicação Angular pronta para a Vercel.
 - `backend`: API Spring Boot pronta para um serviço que execute Java ou Docker.
 
-A Vercel não oferece runtime Java oficial. Por isso, publique primeiro o backend em um serviço compatível com Docker/Java e um banco MySQL persistente. Use `backend/Dockerfile` e cadastre no provedor as variáveis descritas em `backend/.env.example`.
+A Vercel não oferece runtime Java oficial. O arquivo `render.yaml` publica a API e um PostgreSQL no Render, enquanto a Vercel hospeda o frontend. O banco gratuito do Render é indicado para demonstração e possui prazo de expiração definido pelo provedor.
 
 Na Vercel:
 
