@@ -2,6 +2,7 @@ package br.com.medfema.exception;
 
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.*;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
@@ -28,6 +29,11 @@ public class ApiExceptionHandler {
     @ExceptionHandler(NoSuchElementException.class)
     ResponseEntity<Erro> naoEncontrado(NoSuchElementException ex) {
         return resposta(HttpStatus.NOT_FOUND, ex.getMessage(), List.of());
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    ResponseEntity<Erro> autenticacao(AuthenticationException ex) {
+        return resposta(HttpStatus.UNAUTHORIZED, "Usuário ou senha inválidos", List.of());
     }
 
     @ExceptionHandler(Exception.class)

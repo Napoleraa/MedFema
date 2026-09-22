@@ -22,7 +22,7 @@ export class App {
   mensagem = '';
   erro = '';
   aba: 'medicos' | 'pacientes' | 'consultas' = 'medicos';
-  loginForm = { usuario: 'admin', senha: 'admin123' };
+  loginForm = { usuario: 'admin', senha: this.ambienteLocal ? 'admin123' : '' };
   medicos: Medico[] = [];
   pacientes: Paciente[] = [];
   consultas: Consulta[] = [];
