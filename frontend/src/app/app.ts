@@ -45,7 +45,7 @@ export class App {
         this.carregando = false;
         this.erro = e.status === 401
           ? 'Usuário ou senha inválidos.'
-          : 'O sistema não respondeu. Execute a tarefa "MedFEMA: executar tudo" no VS Code e tente novamente.';
+          : 'Não foi possível conectar ao servidor. Aguarde alguns instantes e tente novamente.';
         this.atualizarTela();
       }
     });
